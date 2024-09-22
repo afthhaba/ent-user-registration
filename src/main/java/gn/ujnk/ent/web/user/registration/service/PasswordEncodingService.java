@@ -15,4 +15,9 @@ public class PasswordEncodingService implements IPasswordEncodingService {
 	public String encode(String password){
 		return new BCryptPasswordEncoder().encode(password);
 	}
+
+	@Override
+	public boolean matches(String password, String newPassword){
+		return new BCryptPasswordEncoder().matches(password, newPassword);
+	}
 }
