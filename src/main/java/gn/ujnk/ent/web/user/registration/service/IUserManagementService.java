@@ -19,6 +19,15 @@ public interface IUserManagementService {
     void save(User user);
 
     /**
+     * Update password
+     * @param username login of user
+     * @param oldPassword old password
+     * @param  newPassword
+     * @return user information {@link User}
+     */
+    User updatePassword(String username, String oldPassword, String newPassword) ;
+
+    /**
      * Retriever user by email
      *
      * @param email

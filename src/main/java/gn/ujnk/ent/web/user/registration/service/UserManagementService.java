@@ -16,10 +16,31 @@ public class UserManagementService implements IUserManagementService {
 
 	@Autowired
 	private UserManagementRepository userManagementRepository;
+
+	@Autowired
+	private IPasswordEncodingService passwordEncodingService;
 	
 	@Override
 	public void save(User user) {
 		userManagementRepository.save(user);
+	}
+
+	@Override
+	public User updatePassword(String username, String oldPassword, String newPasswordd) {
+
+		Optional<User> userEntity = findByUsername(username);
+		if(userEntity.isPresent()) {
+
+			boolean canChange = passwordEncodingService.matches(passwordEncodingService.encode(oldPassword), userEntity.get().getPassword());
+			if (canChange) {
+				User user = userEntity.get();
+				user.setPassword(passwordEncodingService.encode(oldPassword));
+				save(user);
+				return user;
+			}
+		}
+
+		return null;
 	}
 
 	@Override

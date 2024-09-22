@@ -2,8 +2,10 @@ package gn.ujnk.ent.web.user.registration.resources;
 
 import gn.ujnk.ent.web.user.registration.config.UserRegistrationConfig;
 import gn.ujnk.ent.web.user.registration.exception.CustomResponse;
+import gn.ujnk.ent.web.user.registration.message.PasswordChangeNotification;
 import gn.ujnk.ent.web.user.registration.message.UserRegistrationNotification;
 import gn.ujnk.ent.web.user.registration.model.User;
+import gn.ujnk.ent.web.user.registration.request.PasswordRequest;
 import gn.ujnk.ent.web.user.registration.request.RegistrationRequest;
 import gn.ujnk.ent.web.user.registration.service.IPasswordEncodingService;
 import gn.ujnk.ent.web.user.registration.service.IUserManagementService;
@@ -41,7 +43,7 @@ public class UserManagementController {
 	}
 
 	@CrossOrigin
-	@PostMapping("/user")
+	@PostMapping("/add")
 	public ResponseEntity<CustomResponse> registerUser(@Validated @RequestBody RegistrationRequest request) {
 		System.out.println(request);
 		User registeredUser = getUser(request);
@@ -57,6 +59,37 @@ public class UserManagementController {
 		success.setStatus(HttpStatus.CREATED.value());
 
 		return new ResponseEntity<>(success, HttpStatus.CREATED);
+	}
+
+	@CrossOrigin
+	@PostMapping("/update/password")
+	public ResponseEntity<CustomResponse> updatePassword(@Validated @RequestBody PasswordRequest request) {
+		System.out.println(request);
+
+		User user = userService.updatePassword(request.getNewPassword(), request.getOldPassword(), request.getNewPassword());
+
+		CustomResponse response = new CustomResponse();
+		response.setTimestamp(LocalDateTime.now());
+
+
+		if(user!=null) {
+			rabbitTemplate.convertAndSend(userRegistrationConfig.getExchangeName(), userRegistrationConfig.getRoutingKey(),
+					new PasswordChangeNotification(user.getEmail(),
+							user.getPassword()));
+
+			response.setMessage("Your password has been changed. An email has been sent to " + user.getEmail());
+			response.setStatus(HttpStatus.CREATED.value());
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} else {
+			response.setMessage("Your password has been changed.");
+			response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		}
+
+
+
+
+
 	}
 
 	/**
