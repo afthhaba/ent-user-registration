@@ -5,12 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>gn.ujnk.ent.web</groupId>
-	<artifactId>user.registration</artifactId>
+	<artifactId>ent-user-registration</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>user-management</name>
-	<description>Demo project for Spring Boot</description>
+	<name>ent-user-registration</name>
+	<description>Centralized user registration microservice for UJNK ent</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
